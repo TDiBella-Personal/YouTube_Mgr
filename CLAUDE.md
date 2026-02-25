@@ -2,11 +2,11 @@
 
 ## Project Overview
 
-**YouTube_Mgr** is a YouTube management application. The repository is in early-stage setup and does not yet contain application code.
+**YouTube_Mgr** is a YouTube guitar lesson search utility. It helps users find guitar instructional videos on YouTube, with priority given to Carl Brown from Guitar365.
 
 - **Repository**: TDiBella-Personal/YouTube_Mgr
 - **Default branch**: `master`
-- **Current state**: Initial scaffolding — no source code, build system, or tests yet
+- **Current state**: Single-page web app (HTML/CSS/JS), no build system required
 
 ## Repository Structure
 
@@ -14,7 +14,8 @@
 YouTube_Mgr/
 ├── .git/
 ├── CLAUDE.md        # This file — guidance for AI assistants
-└── README.md        # Project overview (placeholder)
+├── README.md        # Project overview
+└── index.html       # Guitar Lesson Finder app (open in browser)
 ```
 
 ## Development Workflow
@@ -42,8 +43,9 @@ YouTube_Mgr/
 
 ## Key Conventions
 
-- **Language / Framework**: Not yet chosen. Update this section once the tech stack is decided.
-- **Package manager**: Not yet chosen. Update this section once determined.
+- **Language / Framework**: Vanilla HTML/CSS/JavaScript — no build tools or dependencies.
+- **Package manager**: None required — the app is a single `index.html` file.
+- **API**: YouTube Data API v3 (called client-side). Requires a user-provided API key.
 - Keep the README.md up to date as the project evolves.
 
 ## For AI Assistants
