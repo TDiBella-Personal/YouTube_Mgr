@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guitar Lesson Finder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ========================================
+       CSS CUSTOM PROPERTIES — VIVID THEME
+       ======================================== */
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #14141f;
+      --bg-card: #1a1a2e;
+      --bg-input: #12121e;
+      --text-primary: #f0f0f0;
+      --text-secondary: #a0a0b8;
+      --text-muted: #6a6a80;
+      --accent-1: #ff2d55;       /* hot pink */
+      --accent-2: #7b2dff;       /* electric purple */
+      --accent-3: #00d4ff;       /* cyan */
+      --accent-4: #ffb700;       /* amber */
+      --accent-gradient: linear-gradient(135deg, #ff2d55, #7b2dff, #00d4ff);
+      --border-color: #2a2a40;
+      --border-accent: #ff2d5540;
+      --shadow-glow: 0 0 20px rgba(255, 45, 85, 0.15);
+      --input-border: #2a2a40;
+      --input-focus: #ff2d55;
+      --font-heading: 'Russo One', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --radius: 8px;
+      --slash-angle: -3deg;
+    }
+
+    /* ========================================
+       CALM THEME OVERRIDES
+       ======================================== */
+    [data-theme="calm"] {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f5f5f7;
+      --bg-card: #ffffff;
+      --bg-input: #f5f5f7;
+      --text-primary: #1a1a1a;
+      --text-secondary: #555555;
+      --text-muted: #888888;
+      --accent-1: #1a1a1a;
+      --accent-2: #333333;
+      --accent-3: #0066cc;
+      --accent-4: #1a1a1a;
+      --accent-gradient: linear-gradient(135deg, #333, #555);
+      --border-color: #e0e0e0;
+      --border-accent: #e0e0e0;
+      --shadow-glow: 0 2px 8px rgba(0,0,0,0.08);
+      --input-border: #d0d0d0;
+      --input-focus: #0066cc;
+      --font-heading: 'Inter', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --radius: 6px;
+      --slash-angle: 0deg;
+    }
+
+    /* ========================================
+       RESET & BASE
+       ======================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      transition: background 0.4s, color 0.4s;
+    }
+
+    /* ========================================
+       BACKGROUND SLASHES (VIVID ONLY)
+       ======================================== */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -10%;
+      width: 120%;
+      height: 200%;
+      background: repeating-linear-gradient(
+        var(--slash-angle),
+        transparent,
+        transparent 80px,
+        rgba(255, 45, 85, 0.02) 80px,
+        rgba(255, 45, 85, 0.02) 82px
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    [data-theme="calm"] body::before { display: none; }
+
+    /* ========================================
+       LAYOUT
+       ======================================== */
+    .app-container {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* ========================================
+       HEADER
+       ======================================== */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      margin-bottom: 24px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .logo {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 1px;
+    }
+
+    [data-theme="calm"] .logo {
+      -webkit-text-fill-color: var(--text-primary);
+      background: none;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* ========================================
+       THEME TOGGLE
+       ======================================== */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .theme-toggle .toggle-track {
+      width: 44px;
+      height: 24px;
+      background: var(--border-color);
+      border-radius: 12px;
+      position: relative;
+      transition: background 0.3s;
+    }
+
+    .theme-toggle .toggle-thumb {
+      width: 20px;
+      height: 20px;
+      background: var(--accent-1);
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.3s, background 0.3s;
+    }
+
+    [data-theme="calm"] .toggle-thumb {
+      transform: translateX(20px);
+      background: var(--accent-3);
+    }
+
+    /* ========================================
+       API KEY BAR
+       ======================================== */
+    .api-key-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+    }
+
+    .api-key-bar label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .api-key-bar input {
+      flex: 1;
+      background: var(--bg-input);
+      border: 1px solid var(--input-border);
+      border-radius: 4px;
+      padding: 8px 12px;
+      color: var(--text-primary);
+      font-family: monospace;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .api-key-bar input:focus { border-color: var(--input-focus); }
+
+    .api-key-bar .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ff3b30;
+      flex-shrink: 0;
+      transition: background 0.3s;
+    }
+
+    .api-key-bar .status-dot.active { background: #34c759; }
+
+    .api-key-help {
+      font-size: 0.75rem;
+      color: var(--accent-3);
+      cursor: pointer;
+      text-decoration: underline;
+      white-space: nowrap;
+    }
+
+    /* ========================================
+       SEARCH FORM
+       ======================================== */
+    .search-form {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .form-title {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      color: var(--accent-1);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    [data-theme="calm"] .form-title {
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--text-primary);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full-width { grid-column: 1 / -1; }
+
+    .form-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    [data-theme="calm"] .form-group label {
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .form-group input,
+    .form-group select {
+      background: var(--bg-input);
+      border: 1px solid var(--input-border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--input-focus);
+      box-shadow: 0 0 0 3px rgba(255, 45, 85, 0.1);
+    }
+
+    [data-theme="calm"] .form-group input:focus,
+    [data-theme="calm"] .form-group select:focus {
+      box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
+    }
+
+    .form-group select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    /* Radio buttons */
+    .radio-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 8px 16px;
+      background: var(--bg-input);
+      border: 1px solid var(--input-border);
+      border-radius: var(--radius);
+      transition: border-color 0.2s, background 0.2s;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .radio-option:has(input:checked) {
+      border-color: var(--accent-1);
+      background: rgba(255, 45, 85, 0.08);
+    }
+
+    [data-theme="calm"] .radio-option:has(input:checked) {
+      border-color: var(--accent-3);
+      background: rgba(0, 102, 204, 0.08);
+    }
+
+    .radio-option input[type="radio"] {
+      accent-color: var(--accent-1);
+      width: 16px;
+      height: 16px;
+    }
+
+    [data-theme="calm"] .radio-option input[type="radio"] {
+      accent-color: var(--accent-3);
+    }
+
+    .radio-option span {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* Range slider */
+    .range-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .range-wrapper input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent-1);
+      height: 6px;
+      background: var(--bg-input);
+      border-radius: 3px;
+    }
+
+    [data-theme="calm"] .range-wrapper input[type="range"] {
+      accent-color: var(--accent-3);
+    }
+
+    .range-value {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent-1);
+      min-width: 28px;
+      text-align: center;
+    }
+
+    [data-theme="calm"] .range-value { color: var(--accent-3); }
+
+    /* Search button */
+    .search-btn {
+      grid-column: 1 / -1;
+      padding: 14px;
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--accent-gradient);
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.3s;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .search-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 30px rgba(255, 45, 85, 0.3);
+    }
+
+    .search-btn:active { transform: translateY(0); }
+
+    .search-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    [data-theme="calm"] .search-btn {
+      background: var(--accent-3);
+      letter-spacing: 0;
+      text-transform: none;
+      font-family: var(--font-body);
+      font-weight: 700;
+      box-shadow: none;
+    }
+
+    [data-theme="calm"] .search-btn:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    /* ========================================
+       RESULTS
+       ======================================== */
+    .results-section {
+      margin-top: 8px;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .results-title {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      color: var(--accent-1);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    [data-theme="calm"] .results-title {
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--text-primary);
+    }
+
+    .results-count {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .results-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Result card */
+    .result-item {
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .result-item:hover {
+      border-color: var(--accent-1);
+      box-shadow: var(--shadow-glow);
+      transform: translateX(4px);
+    }
+
+    [data-theme="calm"] .result-item:hover {
+      transform: none;
+      border-color: var(--accent-3);
+    }
+
+    .result-item.carl-brown {
+      border-left: 3px solid var(--accent-4);
+      background: linear-gradient(90deg, rgba(255, 183, 0, 0.05), transparent);
+    }
+
+    [data-theme="calm"] .result-item.carl-brown {
+      border-left: 3px solid var(--accent-3);
+      background: linear-gradient(90deg, rgba(0, 102, 204, 0.04), transparent);
+    }
+
+    .result-thumb {
+      width: 168px;
+      height: 94px;
+      border-radius: 4px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: var(--bg-secondary);
+    }
+
+    .result-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .result-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      line-height: 1.3;
+      color: var(--text-primary);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .result-channel {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .result-channel .featured-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--accent-4);
+      background: rgba(255, 183, 0, 0.12);
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-left: 6px;
+    }
+
+    [data-theme="calm"] .result-channel .featured-badge {
+      color: var(--accent-3);
+      background: rgba(0, 102, 204, 0.1);
+    }
+
+    .result-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+
+    .result-meta span { display: flex; align-items: center; gap: 4px; }
+
+    .result-description {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-top: 2px;
+    }
+
+    /* ========================================
+       LOADING SPINNER
+       ======================================== */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-secondary);
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--accent-1);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ========================================
+       MESSAGES
+       ======================================== */
+    .message {
+      text-align: center;
+      padding: 32px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .message.error { color: #ff3b30; }
+
+    /* ========================================
+       API KEY HELP MODAL
+       ======================================== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 32px;
+      max-width: 560px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      color: var(--text-primary);
+    }
+
+    .modal h2 {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      color: var(--accent-1);
+    }
+
+    [data-theme="calm"] .modal h2 { color: var(--text-primary); }
+
+    .modal ol {
+      padding-left: 20px;
+      line-height: 1.8;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .modal ol a { color: var(--accent-3); }
+
+    .modal .close-btn {
+      margin-top: 20px;
+      padding: 10px 24px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .modal .close-btn:hover { background: var(--bg-secondary); }
+
+    /* ========================================
+       RESPONSIVE
+       ======================================== */
+    @media (max-width: 640px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid .form-group { grid-column: 1; }
+      .result-item { flex-direction: column; }
+      .result-thumb { width: 100%; height: auto; aspect-ratio: 16/9; }
+      .logo { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- HEADER -->
+    <header>
+      <div class="logo">&#9889; Guitar Lesson Finder</div>
+      <div class="header-controls">
+        <div class="theme-toggle" id="themeToggle" title="Switch theme">
+          <span class="theme-label">VIVID</span>
+          <div class="toggle-track">
+            <div class="toggle-thumb"></div>
+          </div>
+          <span class="theme-label">CALM</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- API KEY BAR -->
+    <div class="api-key-bar">
+      <label for="apiKeyInput">API KEY</label>
+      <input type="password" id="apiKeyInput" placeholder="Paste your YouTube Data API v3 key here" autocomplete="off">
+      <div class="status-dot" id="apiStatusDot" title="API key not set"></div>
+      <span class="api-key-help" id="apiHelpBtn">How to get a key</span>
+    </div>
+
+    <!-- SEARCH FORM -->
+    <div class="search-form">
+      <div class="form-title">Find Guitar Lessons</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="songName">Song Name</label>
+          <input type="text" id="songName" placeholder="e.g. Sweet Child O' Mine">
+        </div>
+        <div class="form-group">
+          <label for="artistName">Artist Name</label>
+          <input type="text" id="artistName" placeholder="e.g. Guns N' Roses">
+        </div>
+        <div class="form-group">
+          <label for="tuning">Tuning Preference</label>
+          <select id="tuning">
+            <option value="">Any tuning</option>
+            <option value="standard tuning">Standard (E A D G B E)</option>
+            <option value="half step down Eb tuning">Half Step Down (Eb Ab Db Gb Bb Eb)</option>
+            <option value="drop D tuning">Drop D (D A D G B E)</option>
+            <option value="open G tuning">Open G (D G D G B D)</option>
+            <option value="open D tuning">Open D (D A D F# A D)</option>
+            <option value="open E tuning">Open E (E B E G# B E)</option>
+            <option value="DADGAD tuning">DADGAD (D A D G A D)</option>
+            <option value="full step down D tuning">Full Step Down (D G C F A D)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Guitar Type</label>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" name="guitarType" value="electric" checked>
+              <span>Electric</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="guitarType" value="acoustic">
+              <span>Acoustic</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group full-width">
+          <label for="maxResults">Max Results</label>
+          <div class="range-wrapper">
+            <input type="range" id="maxResults" min="1" max="50" value="10">
+            <span class="range-value" id="maxResultsValue">10</span>
+          </div>
+        </div>
+        <button class="search-btn" id="searchBtn">Search Lessons</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="resultsArea"></div>
+  </div>
+
+  <!-- API KEY HELP MODAL -->
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal">
+      <h2>How to Get a YouTube API Key</h2>
+      <ol>
+        <li>Go to the <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">Google Cloud Console</a></li>
+        <li>Create a new project (or select an existing one)</li>
+        <li>Go to <strong>APIs & Services &gt; Library</strong></li>
+        <li>Search for <strong>YouTube Data API v3</strong> and click <strong>Enable</strong></li>
+        <li>Go to <strong>APIs & Services &gt; Credentials</strong></li>
+        <li>Click <strong>Create Credentials &gt; API Key</strong></li>
+        <li>Copy the key and paste it into the field above</li>
+        <li><em>Optional but recommended:</em> Click <strong>Restrict Key</strong> and limit it to YouTube Data API v3 only</li>
+      </ol>
+      <p style="margin-top: 12px; font-size: 0.8rem; color: var(--text-muted);">
+        The free tier gives you 10,000 quota units/day — plenty for personal use.
+      </p>
+      <button class="close-btn" id="closeModal">Got it</button>
+    </div>
+  </div>
+
+  <script>
+    /* ========================================
+       STATE
+       ======================================== */
+    const CARL_BROWN_CHANNEL = 'guitar365';
+    const CARL_BROWN_ALIASES = ['carl brown', 'guitar365', 'guitar 365'];
+
+    /* ========================================
+       DOM REFS
+       ======================================== */
+    const $ = (sel) => document.querySelector(sel);
+    const apiKeyInput   = $('#apiKeyInput');
+    const apiStatusDot  = $('#apiStatusDot');
+    const searchBtn     = $('#searchBtn');
+    const resultsArea   = $('#resultsArea');
+    const maxResultsEl  = $('#maxResults');
+    const maxResultsVal = $('#maxResultsValue');
+    const themeToggle   = $('#themeToggle');
+    const helpModal     = $('#helpModal');
+
+    /* ========================================
+       THEME TOGGLE
+       ======================================== */
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('glf_theme', theme);
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'vivid';
+      setTheme(current === 'vivid' ? 'calm' : 'vivid');
+    });
+
+    // Restore saved theme
+    const savedTheme = localStorage.getItem('glf_theme') || 'vivid';
+    setTheme(savedTheme);
+
+    /* ========================================
+       API KEY PERSISTENCE
+       ======================================== */
+    function getApiKey() {
+      return apiKeyInput.value.trim();
+    }
+
+    function updateKeyStatus() {
+      const key = getApiKey();
+      if (key.length > 10) {
+        apiStatusDot.classList.add('active');
+        apiStatusDot.title = 'API key set';
+      } else {
+        apiStatusDot.classList.remove('active');
+        apiStatusDot.title = 'API key not set';
+      }
+    }
+
+    apiKeyInput.addEventListener('input', () => {
+      updateKeyStatus();
+      localStorage.setItem('glf_api_key', apiKeyInput.value.trim());
+    });
+
+    // Restore saved key
+    const savedKey = localStorage.getItem('glf_api_key') || '';
+    if (savedKey) {
+      apiKeyInput.value = savedKey;
+      updateKeyStatus();
+    }
+
+    /* ========================================
+       HELP MODAL
+       ======================================== */
+    $('#apiHelpBtn').addEventListener('click', () => helpModal.classList.add('active'));
+    $('#closeModal').addEventListener('click', () => helpModal.classList.remove('active'));
+    helpModal.addEventListener('click', (e) => {
+      if (e.target === helpModal) helpModal.classList.remove('active');
+    });
+
+    /* ========================================
+       RANGE SLIDER
+       ======================================== */
+    maxResultsEl.addEventListener('input', () => {
+      maxResultsVal.textContent = maxResultsEl.value;
+    });
+
+    /* ========================================
+       YOUTUBE API HELPERS
+       ======================================== */
+    const YT_API = 'https://www.googleapis.com/youtube/v3';
+
+    async function ytFetch(endpoint, params) {
+      const key = getApiKey();
+      if (!key) throw new Error('Please enter your YouTube API key first.');
+
+      const url = new URL(`${YT_API}/${endpoint}`);
+      params.key = key;
+      for (const [k, v] of Object.entries(params)) {
+        url.searchParams.set(k, v);
+      }
+
+      const resp = await fetch(url.toString());
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        const msg = err?.error?.message || `API error (${resp.status})`;
+        throw new Error(msg);
+      }
+      return resp.json();
+    }
+
+    /* ========================================
+       SEARCH LOGIC
+       ======================================== */
+    function buildQuery() {
+      const song    = $('#songName').value.trim();
+      const artist  = $('#artistName').value.trim();
+      const tuning  = $('#tuning').value;
+      const guitar  = document.querySelector('input[name="guitarType"]:checked').value;
+
+      const parts = [];
+      if (song)   parts.push(song);
+      if (artist) parts.push(artist);
+      parts.push('guitar lesson');
+      if (guitar) parts.push(guitar + ' guitar');
+      if (tuning) parts.push(tuning);
+
+      return parts.join(' ');
+    }
+
+    function isCarlBrown(channelTitle) {
+      const lower = channelTitle.toLowerCase();
+      return CARL_BROWN_ALIASES.some(alias => lower.includes(alias));
+    }
+
+    async function doSearch() {
+      const maxResults = parseInt(maxResultsEl.value, 10);
+      const query = buildQuery();
+
+      // We fetch extra results so we have room after dedup/ranking
+      const fetchCount = Math.min(maxResults + 10, 50);
+
+      // Search 1: targeted Carl Brown search
+      const carlQuery = query + ' carl brown guitar365';
+      const [carlResults, generalResults] = await Promise.all([
+        ytFetch('search', {
+          part: 'snippet',
+          type: 'video',
+          q: carlQuery,
+          maxResults: Math.min(10, fetchCount),
+          relevanceLanguage: 'en',
+        }),
+        ytFetch('search', {
+          part: 'snippet',
+          type: 'video',
+          q: query,
+          maxResults: fetchCount,
+          relevanceLanguage: 'en',
+        })
+      ]);
+
+      // Merge and deduplicate
+      const seen = new Set();
+      const allItems = [];
+
+      for (const item of [...(carlResults.items || []), ...(generalResults.items || [])]) {
+        const vid = item.id?.videoId;
+        if (!vid || seen.has(vid)) continue;
+        seen.add(vid);
+        allItems.push(item);
+      }
+
+      if (allItems.length === 0) return [];
+
+      // Get video stats (viewCount)
+      const videoIds = allItems.map(i => i.id.videoId).join(',');
+      const videoStats = await ytFetch('videos', {
+        part: 'statistics',
+        id: videoIds,
+      });
+
+      const viewMap = {};
+      for (const v of videoStats.items || []) {
+        viewMap[v.id] = parseInt(v.statistics.viewCount || '0', 10);
+      }
+
+      // Get channel stats (subscriberCount) for unique channels
+      const channelIds = [...new Set(allItems.map(i => i.snippet.channelId))].join(',');
+      const channelStats = await ytFetch('channels', {
+        part: 'statistics',
+        id: channelIds,
+      });
+
+      const subMap = {};
+      for (const c of channelStats.items || []) {
+        subMap[c.id] = parseInt(c.statistics.subscriberCount || '0', 10);
+      }
+
+      // Build enriched results
+      const results = allItems.map(item => ({
+        videoId:     item.id.videoId,
+        title:       item.snippet.title,
+        description: item.snippet.description,
+        channelId:   item.snippet.channelId,
+        channel:     item.snippet.channelTitle,
+        thumbnail:   item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url,
+        publishedAt: item.snippet.publishedAt,
+        isCarlBrown: isCarlBrown(item.snippet.channelTitle),
+        views:       viewMap[item.id.videoId] || 0,
+        subscribers: subMap[item.snippet.channelId] || 0,
+      }));
+
+      // Sort: Carl Brown first, then views desc, then subscribers desc
+      results.sort((a, b) => {
+        if (a.isCarlBrown !== b.isCarlBrown) return a.isCarlBrown ? -1 : 1;
+        if (b.views !== a.views) return b.views - a.views;
+        return b.subscribers - a.subscribers;
+      });
+
+      return results.slice(0, maxResults);
+    }
+
+    /* ========================================
+       RENDER RESULTS
+       ======================================== */
+    function formatNumber(n) {
+      if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
+      if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K';
+      return n.toString();
+    }
+
+    function renderResults(results) {
+      if (results.length === 0) {
+        resultsArea.innerHTML = '<div class="message">No results found. Try broadening your search.</div>';
+        return;
+      }
+
+      const html = `
+        <div class="results-section">
+          <div class="results-header">
+            <div class="results-title">Results</div>
+            <div class="results-count">${results.length} lesson${results.length !== 1 ? 's' : ''} found</div>
+          </div>
+          <div class="results-list">
+            ${results.map(r => `
+              <a class="result-item${r.isCarlBrown ? ' carl-brown' : ''}"
+                 href="https://www.youtube.com/watch?v=${r.videoId}"
+                 target="_blank" rel="noopener">
+                <img class="result-thumb" src="${r.thumbnail}" alt="" loading="lazy">
+                <div class="result-info">
+                  <div class="result-title">${escapeHtml(r.title)}</div>
+                  <div class="result-channel">
+                    ${escapeHtml(r.channel)}
+                    ${r.isCarlBrown ? '<span class="featured-badge">&#9733; Recommended</span>' : ''}
+                  </div>
+                  <div class="result-description">${escapeHtml(r.description)}</div>
+                  <div class="result-meta">
+                    <span>&#9655; ${formatNumber(r.views)} views</span>
+                    <span>&#128101; ${formatNumber(r.subscribers)} subscribers</span>
+                    <span>&#128197; ${new Date(r.publishedAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              </a>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      resultsArea.innerHTML = html;
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    /* ========================================
+       SEARCH BUTTON HANDLER
+       ======================================== */
+    searchBtn.addEventListener('click', async () => {
+      if (!getApiKey()) {
+        resultsArea.innerHTML = '<div class="message error">Please enter your YouTube API key above to search.</div>';
+        return;
+      }
+
+      const song = $('#songName').value.trim();
+      if (!song) {
+        resultsArea.innerHTML = '<div class="message error">Please enter a song name.</div>';
+        return;
+      }
+
+      searchBtn.disabled = true;
+      resultsArea.innerHTML = '<div class="loading"><div class="spinner"></div>Searching for lessons...</div>';
+
+      try {
+        const results = await doSearch();
+        renderResults(results);
+      } catch (err) {
+        resultsArea.innerHTML = `<div class="message error">${escapeHtml(err.message)}</div>`;
+      } finally {
+        searchBtn.disabled = false;
+      }
+    });
+
+    // Allow Enter key to trigger search from any form input
+    document.querySelectorAll('.search-form input, .search-form select').forEach(el => {
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          searchBtn.click();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
