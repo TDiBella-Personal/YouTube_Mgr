@@ -37,23 +37,23 @@
        CALM THEME OVERRIDES
        ======================================== */
     [data-theme="calm"] {
-      --bg-primary: #ffffff;
-      --bg-secondary: #f5f5f7;
-      --bg-card: #ffffff;
-      --bg-input: #f5f5f7;
-      --text-primary: #1a1a1a;
-      --text-secondary: #555555;
-      --text-muted: #888888;
-      --accent-1: #1a1a1a;
-      --accent-2: #333333;
-      --accent-3: #0066cc;
-      --accent-4: #1a1a1a;
-      --accent-gradient: linear-gradient(135deg, #333, #555);
-      --border-color: #e0e0e0;
-      --border-accent: #e0e0e0;
-      --shadow-glow: 0 2px 8px rgba(0,0,0,0.08);
-      --input-border: #d0d0d0;
-      --input-focus: #0066cc;
+      --bg-primary: #1e1e1e;
+      --bg-secondary: #2a2a2a;
+      --bg-card: #252525;
+      --bg-input: #2a2a2a;
+      --text-primary: #e8e8e8;
+      --text-secondary: #b0b0b0;
+      --text-muted: #777777;
+      --accent-1: #e63946;
+      --accent-2: #d62839;
+      --accent-3: #e63946;
+      --accent-4: #ffb700;
+      --accent-gradient: linear-gradient(135deg, #e63946, #ffb700);
+      --border-color: #3a3a3a;
+      --border-accent: #e6394640;
+      --shadow-glow: 0 2px 12px rgba(0,0,0,0.3);
+      --input-border: #3a3a3a;
+      --input-focus: #e63946;
       --font-heading: 'Inter', sans-serif;
       --font-body: 'Inter', sans-serif;
       --radius: 6px;
@@ -87,14 +87,34 @@
         var(--slash-angle),
         transparent,
         transparent 80px,
-        rgba(255, 45, 85, 0.02) 80px,
-        rgba(255, 45, 85, 0.02) 82px
+        rgba(255, 45, 85, 0.04) 80px,
+        rgba(255, 45, 85, 0.04) 82px
       );
       pointer-events: none;
       z-index: 0;
     }
 
     [data-theme="calm"] body::before { display: none; }
+
+    /* Electric guitar silhouette (Vivid only) */
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -5%;
+      right: -8%;
+      width: 45%;
+      height: 90%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 350'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ff2d55'/%3E%3Cstop offset='50%25' stop-color='%237b2dff'/%3E%3Cstop offset='100%25' stop-color='%2300d4ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M48 8 Q53 5 56 12 L53 20 L56 28 L53 36 L54 44 L51 50 L51 145 Q70 150 83 178 Q94 205 89 238 Q84 268 70 285 Q62 296 59 318 Q57 335 52 345 Q47 335 45 318 Q42 296 34 285 Q20 268 15 238 Q10 205 21 178 Q34 150 51 145 L51 50 L48 44 L49 36 L46 28 L49 20 L46 12 Q47 5 48 8 Z' fill='url(%23g)' opacity='0.6'/%3E%3Ccircle cx='52' cy='210' r='14' fill='none' stroke='%23fff' stroke-width='1.5' opacity='0.4'/%3E%3Ccircle cx='52' cy='250' r='10' fill='none' stroke='%23fff' stroke-width='1.5' opacity='0.4'/%3E%3Cline x1='46' y1='50' x2='46' y2='330' stroke='%23fff' stroke-width='0.3' opacity='0.3'/%3E%3Cline x1='49' y1='50' x2='49' y2='330' stroke='%23fff' stroke-width='0.3' opacity='0.3'/%3E%3Cline x1='52' y1='50' x2='52' y2='330' stroke='%23fff' stroke-width='0.3' opacity='0.3'/%3E%3Cline x1='55' y1='50' x2='55' y2='330' stroke='%23fff' stroke-width='0.3' opacity='0.3'/%3E%3Cline x1='58' y1='50' x2='58' y2='330' stroke='%23fff' stroke-width='0.3' opacity='0.3'/%3E%3Cline x1='43' y1='50' x2='43' y2='330' stroke='%23fff' stroke-width='0.3' opacity='0.3'/%3E%3C/svg%3E");
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center bottom;
+      opacity: 0.05;
+      pointer-events: none;
+      z-index: 0;
+      transform: rotate(15deg);
+    }
+
+    [data-theme="calm"] body::after { display: none; }
 
     /* ========================================
        LAYOUT
@@ -130,8 +150,7 @@
     }
 
     [data-theme="calm"] .logo {
-      -webkit-text-fill-color: var(--text-primary);
-      background: none;
+      letter-spacing: 0;
     }
 
     .header-controls {
@@ -257,7 +276,6 @@
     [data-theme="calm"] .form-title {
       text-transform: none;
       letter-spacing: 0;
-      color: var(--text-primary);
     }
 
     .form-grid {
@@ -288,7 +306,8 @@
     }
 
     .form-group input,
-    .form-group select {
+    .form-group select,
+    .form-group textarea {
       background: var(--bg-input);
       border: 1px solid var(--input-border);
       border-radius: var(--radius);
@@ -301,14 +320,16 @@
     }
 
     .form-group input:focus,
-    .form-group select:focus {
+    .form-group select:focus,
+    .form-group textarea:focus {
       border-color: var(--input-focus);
       box-shadow: 0 0 0 3px rgba(255, 45, 85, 0.1);
     }
 
     [data-theme="calm"] .form-group input:focus,
-    [data-theme="calm"] .form-group select:focus {
-      box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
+    [data-theme="calm"] .form-group select:focus,
+    [data-theme="calm"] .form-group textarea:focus {
+      box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.15);
     }
 
     .form-group select {
@@ -318,6 +339,11 @@
       background-repeat: no-repeat;
       background-position: right 12px center;
       padding-right: 36px;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 60px;
     }
 
     /* Radio buttons */
@@ -347,7 +373,7 @@
 
     [data-theme="calm"] .radio-option:has(input:checked) {
       border-color: var(--accent-3);
-      background: rgba(0, 102, 204, 0.08);
+      background: rgba(230, 57, 70, 0.08);
     }
 
     .radio-option input[type="radio"] {
@@ -426,7 +452,7 @@
     }
 
     [data-theme="calm"] .search-btn {
-      background: var(--accent-3);
+      background: var(--accent-gradient);
       letter-spacing: 0;
       text-transform: none;
       font-family: var(--font-body);
@@ -435,7 +461,7 @@
     }
 
     [data-theme="calm"] .search-btn:hover {
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 16px rgba(230, 57, 70, 0.25);
     }
 
     /* ========================================
@@ -463,7 +489,6 @@
     [data-theme="calm"] .results-title {
       text-transform: none;
       letter-spacing: 0;
-      color: var(--text-primary);
     }
 
     .results-count {
@@ -508,8 +533,8 @@
     }
 
     [data-theme="calm"] .result-item.carl-brown {
-      border-left: 3px solid var(--accent-3);
-      background: linear-gradient(90deg, rgba(0, 102, 204, 0.04), transparent);
+      border-left: 3px solid var(--accent-4);
+      background: linear-gradient(90deg, rgba(255, 183, 0, 0.06), transparent);
     }
 
     .result-thumb {
@@ -559,8 +584,8 @@
     }
 
     [data-theme="calm"] .result-channel .featured-badge {
-      color: var(--accent-3);
-      background: rgba(0, 102, 204, 0.1);
+      color: var(--accent-4);
+      background: rgba(255, 183, 0, 0.12);
     }
 
     .result-meta {
@@ -651,7 +676,7 @@
       color: var(--accent-1);
     }
 
-    [data-theme="calm"] .modal h2 { color: var(--text-primary); }
+    [data-theme="calm"] .modal h2 { color: var(--accent-1); }
 
     .modal ol {
       padding-left: 20px;
@@ -756,6 +781,10 @@
             <input type="range" id="maxResults" min="1" max="50" value="10">
             <span class="range-value" id="maxResultsValue">10</span>
           </div>
+        </div>
+        <div class="form-group full-width">
+          <label for="specialInstructions">Special Instructions</label>
+          <textarea id="specialInstructions" placeholder="e.g. slow tempo, fingerpicking, no capo, beginner friendly..."></textarea>
         </div>
         <button class="search-btn" id="searchBtn">Search Lessons</button>
       </div>
@@ -901,6 +930,7 @@
       const artist  = $('#artistName').value.trim();
       const tuning  = $('#tuning').value;
       const guitar  = document.querySelector('input[name="guitarType"]:checked').value;
+      const special = $('#specialInstructions').value.trim();
 
       const parts = [];
       if (song)   parts.push(song);
@@ -908,6 +938,7 @@
       parts.push('guitar lesson');
       if (guitar) parts.push(guitar + ' guitar');
       if (tuning) parts.push(tuning);
+      if (special) parts.push(special);
 
       return parts.join(' ');
     }
@@ -915,6 +946,26 @@
     function isCarlBrown(channelTitle) {
       const lower = channelTitle.toLowerCase();
       return CARL_BROWN_ALIASES.some(alias => lower.includes(alias));
+    }
+
+    function isLikelyLesson(title, description, channelTitle) {
+      if (isCarlBrown(channelTitle)) return true;
+      const text = (title + ' ' + description).toLowerCase();
+      const lessonWords = [
+        'lesson', 'tutorial', 'how to', 'learn', 'teach', 'tab ', 'tabs ',
+        'tabs,', 'chord', 'playthrough', 'walkthrough', 'instruction',
+        'beginner', 'intermediate', 'advanced', 'technique', 'step by step',
+        'play along', 'riff', 'lick', 'solo lesson', 'easy guitar',
+        'guitar tutorial', 'guitar lesson', 'cover lesson'
+      ];
+      if (lessonWords.some(kw => text.includes(kw))) return true;
+      const nonLessonWords = [
+        'official video', 'official music video', 'music video',
+        'live at ', 'live from ', 'concert', 'reaction', 'unboxing',
+        'interview', 'vlog', 'official audio'
+      ];
+      if (nonLessonWords.some(kw => text.includes(kw))) return false;
+      return true;
     }
 
     async function doSearch() {
@@ -994,14 +1045,17 @@
         subscribers: subMap[item.snippet.channelId] || 0,
       }));
 
+      // Filter out non-tutorial/lesson videos
+      const filtered = results.filter(r => isLikelyLesson(r.title, r.description, r.channel));
+
       // Sort: Carl Brown first, then views desc, then subscribers desc
-      results.sort((a, b) => {
+      filtered.sort((a, b) => {
         if (a.isCarlBrown !== b.isCarlBrown) return a.isCarlBrown ? -1 : 1;
         if (b.views !== a.views) return b.views - a.views;
         return b.subscribers - a.subscribers;
       });
 
-      return results.slice(0, maxResults);
+      return filtered.slice(0, maxResults);
     }
 
     /* ========================================
